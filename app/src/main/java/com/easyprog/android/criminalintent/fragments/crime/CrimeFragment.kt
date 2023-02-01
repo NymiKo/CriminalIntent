@@ -1,4 +1,4 @@
-package com.easyprog.android.criminalintent
+package com.easyprog.android.criminalintent.fragments.crime
 
 import android.os.Bundle
 import android.text.Editable
@@ -10,6 +10,8 @@ import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import androidx.fragment.app.Fragment
+import com.easyprog.android.criminalintent.model.Crime
+import com.easyprog.android.criminalintent.R
 
 class CrimeFragment: Fragment() {
 

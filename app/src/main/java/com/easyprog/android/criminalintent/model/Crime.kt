@@ -1,4 +1,4 @@
-package com.easyprog.android.criminalintent
+package com.easyprog.android.criminalintent.model
 
 import java.util.Date
 import java.util.UUID
