@@ -1,6 +1,7 @@
 package com.easyprog.android.criminalintent.activity
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.easyprog.android.criminalintent.R
 import com.easyprog.android.criminalintent.fragments.crime.CrimeFragment
@@ -26,7 +27,7 @@ class MainActivity : AppCompatActivity(), Callbacks {
     }
 
     override fun onCrimeSelected(crimeId: UUID) {
-        val fragment = CrimeFragment()
+        val fragment = CrimeFragment.newInstance(crimeId)
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.fragment_container, fragment)

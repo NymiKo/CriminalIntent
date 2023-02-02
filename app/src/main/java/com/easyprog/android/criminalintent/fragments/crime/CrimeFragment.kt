@@ -10,10 +10,27 @@ import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.easyprog.android.criminalintent.database.entity.Crime
 import com.easyprog.android.criminalintent.R
+import java.util.UUID
 
 class CrimeFragment: Fragment() {
+
+    companion object {
+        private const val ARG_CRIME_ID = "crime_id"
+
+        fun newInstance(crimeId: UUID): CrimeFragment {
+            val args = Bundle().apply {
+                putSerializable(ARG_CRIME_ID, crimeId)
+            }
+            return CrimeFragment().apply {
+                arguments = args
+            }
+        }
+    }
+
+    private val viewModel: CrimeDetailViewModel by lazy { ViewModelProvider(this)[CrimeDetailViewModel::class.java] }
 
     private lateinit var crime: Crime
     private lateinit var titleField: EditText
@@ -22,6 +39,8 @@ class CrimeFragment: Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val crimeId = requireArguments().getSerializable(ARG_CRIME_ID) as UUID
+        viewModel.loadCrime(crimeId)
         crime = Crime()
     }
 
@@ -43,6 +62,15 @@ class CrimeFragment: Fragment() {
         return view
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.crimeIdLiveData.observe(viewLifecycleOwner) { crime ->
+            crime?.let {
+                this.crime = crime
+                updateUI()
+            }
+        }
+    }
 
     override fun onStart() {
         super.onStart()
@@ -62,6 +90,15 @@ class CrimeFragment: Fragment() {
 
         solvedCheckBox.setOnCheckedChangeListener { _, isChecked ->
             crime.isSolved = isChecked
+        }
+    }
+
+    private fun updateUI() {
+        titleField.setText(crime.title)
+        dateButton.text = crime.date.toString()
+        solvedCheckBox.apply {
+            isChecked = crime.isSolved
+            jumpDrawablesToCurrentState()
         }
     }
 }
