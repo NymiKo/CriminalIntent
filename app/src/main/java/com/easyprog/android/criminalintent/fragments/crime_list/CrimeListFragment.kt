@@ -1,6 +1,8 @@
 package com.easyprog.android.criminalintent.fragments.crime_list
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +14,9 @@ import com.easyprog.android.criminalintent.R
 import com.easyprog.android.criminalintent.adapter.CrimeAdapter
 import com.easyprog.android.criminalintent.database.entity.Crime
 
-class CrimeListFragment: Fragment() {
+class CrimeListFragment : Fragment() {
+
+    private var callbacks: Callbacks? = null
 
     companion object {
         fun newInstance(): CrimeListFragment {
@@ -23,7 +27,12 @@ class CrimeListFragment: Fragment() {
     private val viewModel: CrimeListViewModel by lazy { ViewModelProvider(this)[CrimeListViewModel::class.java] }
 
     private lateinit var crimeRecyclerView: RecyclerView
-    private var adapter: CrimeAdapter? = CrimeAdapter(emptyList())
+    private var adapter: CrimeAdapter? = CrimeAdapter(emptyList(), callbacks)
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        callbacks = context as Callbacks
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,7 +56,12 @@ class CrimeListFragment: Fragment() {
     }
 
     private fun updateUI(crimes: List<Crime>) {
-        adapter = CrimeAdapter(crimes)
+        adapter = CrimeAdapter(crimes, callbacks)
         crimeRecyclerView.adapter = adapter
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        callbacks = null
     }
 }

@@ -32,4 +32,6 @@ class CrimeRepository private constructor(context: Context) {
     fun getCrimes(): LiveData<List<Crime>> = crimeDao.getCrimes()
 
     fun getCrime(id: UUID): LiveData<Crime?> = crimeDao.getCrime(id)
+
+    fun insertCrimes(crimes: List<Crime>) = crimeDao.insert(crimes)
 }
