@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.easyprog.android.criminalintent.R
 import com.easyprog.android.criminalintent.adapter.CrimeAdapter
+import com.easyprog.android.criminalintent.database.entity.Crime
 
 class CrimeListFragment: Fragment() {
 
@@ -22,8 +23,7 @@ class CrimeListFragment: Fragment() {
     private val viewModel: CrimeListViewModel by lazy { ViewModelProvider(this)[CrimeListViewModel::class.java] }
 
     private lateinit var crimeRecyclerView: RecyclerView
-
-    private var adapter: CrimeAdapter? = null
+    private var adapter: CrimeAdapter? = CrimeAdapter(emptyList())
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,14 +34,19 @@ class CrimeListFragment: Fragment() {
 
         crimeRecyclerView = view.findViewById(R.id.crime_recycler_view) as RecyclerView
         crimeRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-
-        updateUI()
+        crimeRecyclerView.adapter = adapter
 
         return view
     }
 
-    private fun updateUI() {
-        val crimes = viewModel.crimes
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.crimeListLiveData.observe(viewLifecycleOwner) { crimes ->
+            crimes?.let { updateUI(crimes) }
+        }
+    }
+
+    private fun updateUI(crimes: List<Crime>) {
         adapter = CrimeAdapter(crimes)
         crimeRecyclerView.adapter = adapter
     }

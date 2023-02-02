@@ -1,15 +1,10 @@
 package com.easyprog.android.criminalintent.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.easyprog.android.criminalintent.R
-import com.easyprog.android.criminalintent.adapter.CrimeAdapter.*
-import com.easyprog.android.criminalintent.model.Crime
+import com.easyprog.android.criminalintent.database.entity.Crime
 
 class CrimeAdapter(var crimes: List<Crime>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 

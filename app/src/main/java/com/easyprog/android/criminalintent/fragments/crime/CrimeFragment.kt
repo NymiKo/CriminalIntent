@@ -10,7 +10,7 @@ import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import androidx.fragment.app.Fragment
-import com.easyprog.android.criminalintent.model.Crime
+import com.easyprog.android.criminalintent.database.entity.Crime
 import com.easyprog.android.criminalintent.R
 
 class CrimeFragment: Fragment() {
