@@ -5,13 +5,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.easyprog.android.criminalintent.R
 import com.easyprog.android.criminalintent.adapter.CrimeAdapter.*
 import com.easyprog.android.criminalintent.database.entity.Crime
 import com.easyprog.android.criminalintent.fragments.crime_list.Callbacks
 
-class CrimeAdapter(var crimes: List<Crime>, val callbacks: Callbacks?): RecyclerView.Adapter<CrimeHolder>() {
+class CrimeAdapter(var crimes: List<Crime>, val callbacks: Callbacks?): ListAdapter<Crime, CrimeHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CrimeHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.list_item_crime, parent, false)

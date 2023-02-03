@@ -101,4 +101,9 @@ class CrimeFragment: Fragment() {
             jumpDrawablesToCurrentState()
         }
     }
+
+    override fun onStop() {
+        super.onStop()
+        viewModel.saveCrime(crime)
+    }
 }
