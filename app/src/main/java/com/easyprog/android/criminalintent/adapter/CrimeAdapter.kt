@@ -12,7 +12,7 @@ import com.easyprog.android.criminalintent.adapter.CrimeAdapter.*
 import com.easyprog.android.criminalintent.database.entity.Crime
 import com.easyprog.android.criminalintent.fragments.crime_list.Callbacks
 
-class CrimeAdapter(var crimes: List<Crime>, val callbacks: Callbacks?): ListAdapter<Crime, CrimeHolder>() {
+class CrimeAdapter(val callbacks: Callbacks?): ListAdapter<Crime, CrimeHolder>(CrimeItemDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CrimeHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.list_item_crime, parent, false)
@@ -20,11 +20,8 @@ class CrimeAdapter(var crimes: List<Crime>, val callbacks: Callbacks?): ListAdap
     }
 
     override fun onBindViewHolder(holder: CrimeHolder, position: Int) {
-        val crime = crimes[position]
-        holder.bind(crime)
+        holder.bind(getItem(position))
     }
-
-    override fun getItemCount(): Int = crimes.size
 
     inner class CrimeHolder(view: View): RecyclerView.ViewHolder(view), View.OnClickListener{
         private val titleTextView: TextView = itemView.findViewById(R.id.crime_title)

@@ -27,11 +27,12 @@ class CrimeListFragment : Fragment() {
     private val viewModel: CrimeListViewModel by lazy { ViewModelProvider(this)[CrimeListViewModel::class.java] }
 
     private lateinit var crimeRecyclerView: RecyclerView
-    private var adapter: CrimeAdapter? = CrimeAdapter(emptyList(), callbacks)
+    private var adapter: CrimeAdapter? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         callbacks = context as Callbacks
+        adapter = CrimeAdapter(callbacks)
     }
 
     override fun onCreateView(
@@ -56,8 +57,7 @@ class CrimeListFragment : Fragment() {
     }
 
     private fun updateUI(crimes: List<Crime>) {
-        adapter = CrimeAdapter(crimes, callbacks)
-        crimeRecyclerView.adapter = adapter
+        adapter?.submitList(crimes)
     }
 
     override fun onDetach() {

@@ -13,12 +13,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.easyprog.android.criminalintent.database.entity.Crime
 import com.easyprog.android.criminalintent.R
+import com.easyprog.android.criminalintent.fragments.date_picker.DatePickerFragment
 import java.util.UUID
 
 class CrimeFragment: Fragment() {
 
     companion object {
         private const val ARG_CRIME_ID = "crime_id"
+        private const val DIALOG_DATE = "DialogDate"
 
         fun newInstance(crimeId: UUID): CrimeFragment {
             val args = Bundle().apply {
@@ -54,11 +56,6 @@ class CrimeFragment: Fragment() {
         dateButton = view.findViewById(R.id.crime_date) as Button
         solvedCheckBox = view.findViewById(R.id.crime_solved) as CheckBox
 
-        dateButton.apply {
-            text = crime.date.toString()
-            isEnabled = false
-        }
-
         return view
     }
 
@@ -90,6 +87,12 @@ class CrimeFragment: Fragment() {
 
         solvedCheckBox.setOnCheckedChangeListener { _, isChecked ->
             crime.isSolved = isChecked
+        }
+
+        dateButton.setOnClickListener {
+            DatePickerFragment().apply {
+                show(this@CrimeFragment.childFragmentManager, DIALOG_DATE)
+            }
         }
     }
 
