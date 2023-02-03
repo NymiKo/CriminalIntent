@@ -30,7 +30,7 @@ class DatePickerFragment: DialogFragment() {
 
         val dateListener = DatePickerDialog.OnDateSetListener { _: DatePicker, year: Int, month: Int, day: Int ->
 
-            val resultDate: Date = GregorianCalendar(year, month, day).time
+            val resultDate: Date = GregorianCalendar(year, month, day, ).time
 
             val resultBundle = Bundle().apply {
                 putSerializable(RESULT_DATE_KEY, resultDate)

@@ -5,4 +5,6 @@
     <string name="crime_details_label">Детали</string>
     <string name="crime_solved_label">Решено</string>
     <string name="requires_police">Вызвать полицию</string>
+    <string name="new_crime">Новое преступление</string>
+    <string name="empty_list">Список пуст</string>
 </resources>
