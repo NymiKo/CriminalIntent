@@ -1,5 +1,6 @@
 package com.easyprog.android.criminalintent.fragments.crime
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -42,6 +43,7 @@ class CrimeFragment: Fragment(), FragmentResultListener {
     private lateinit var crime: Crime
     private lateinit var titleField: EditText
     private lateinit var dateButton: Button
+    private lateinit var reportButton: Button
     private lateinit var solvedCheckBox: CheckBox
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,6 +61,7 @@ class CrimeFragment: Fragment(), FragmentResultListener {
         val view = inflater.inflate(R.layout.fragment_crime, container, false)
         titleField = view.findViewById(R.id.crime_title) as EditText
         dateButton = view.findViewById(R.id.crime_date) as Button
+        reportButton = view.findViewById(R.id.crime_report) as Button
         solvedCheckBox = view.findViewById(R.id.crime_solved) as CheckBox
 
         return view
@@ -100,6 +103,17 @@ class CrimeFragment: Fragment(), FragmentResultListener {
                 show(this@CrimeFragment.childFragmentManager, DIALOG_DATE)
             }
         }
+
+        reportButton.setOnClickListener {
+            Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, getCrimeReport())
+                putExtra(Intent.EXTRA_SUBJECT, getString(R.string.crime_report_subject))
+            }.also { intent ->
+                val chooseIntent = Intent.createChooser(intent, getString(R.string.send_report))
+                startActivity(chooseIntent)
+            }
+        }
     }
 
     private fun updateUI() {
@@ -109,6 +123,16 @@ class CrimeFragment: Fragment(), FragmentResultListener {
             isChecked = crime.isSolved
             jumpDrawablesToCurrentState()
         }
+    }
+
+    private fun getCrimeReport(): String {
+        val solvedString = if(crime.isSolved) getString(R.string.crime_report_solved)
+        else getString(R.string.crime_report_unsolved)
+
+        val dateString = DateFormat.format(DATE_FORMAT, crime.date).toString()
+        val suspect = if (crime.suspect.isBlank()) getString(R.string.crime_report_no_suspect)
+        else getString(R.string.crime_report_suspect, crime.suspect)
+        return getString(R.string.crime_report, crime.title, dateString, solvedString, suspect)
     }
 
     private fun dateResult(result: Bundle) = result.getSerializable(RESULT_DATE_KEY) as Date
