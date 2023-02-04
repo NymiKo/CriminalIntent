@@ -2,6 +2,7 @@ package com.easyprog.android.criminalintent.fragments.crime
 
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.text.Editable
@@ -13,16 +14,18 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
-import androidx.activity.result.contract.ActivityResultContracts.*
+import android.widget.ImageButton
+import androidx.activity.result.contract.ActivityResultContracts.PickContact
+import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentResultListener
 import androidx.lifecycle.ViewModelProvider
-import com.easyprog.android.criminalintent.database.entity.Crime
 import com.easyprog.android.criminalintent.R
+import com.easyprog.android.criminalintent.database.entity.Crime
 import com.easyprog.android.criminalintent.fragments.date_picker.DatePickerFragment
 import java.util.*
 
-class CrimeFragment: Fragment(), FragmentResultListener {
+class CrimeFragment : Fragment(), FragmentResultListener {
 
     companion object {
         private const val ARG_CRIME_ID = "crime_id"
@@ -30,7 +33,6 @@ class CrimeFragment: Fragment(), FragmentResultListener {
         private const val REQUEST_DATE = "RequestDate"
         private const val RESULT_DATE_KEY = "ARG_RESULT_DATE"
         private const val DATE_FORMAT = "EEE, MMM, dd"
-        private const val REQUEST_CONTACT = 1
 
         fun newInstance(crimeId: UUID): CrimeFragment {
             val args = Bundle().apply {
@@ -49,9 +51,13 @@ class CrimeFragment: Fragment(), FragmentResultListener {
     private lateinit var dateButton: Button
     private lateinit var reportButton: Button
     private lateinit var suspectButton: Button
+    private lateinit var callSuspectButton: ImageButton
     private lateinit var solvedCheckBox: CheckBox
 
     private val launcher = getContactName()
+    private val launcherPermission = checkPermissionForContacts { launcher.launch(null) }
+
+    private var contactNumber = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,6 +76,7 @@ class CrimeFragment: Fragment(), FragmentResultListener {
         dateButton = view.findViewById(R.id.crime_date) as Button
         reportButton = view.findViewById(R.id.crime_report) as Button
         suspectButton = view.findViewById(R.id.crime_suspect) as Button
+        callSuspectButton = view.findViewById(R.id.call_suspect) as ImageButton
         solvedCheckBox = view.findViewById(R.id.crime_solved) as CheckBox
 
         return view
@@ -89,10 +96,20 @@ class CrimeFragment: Fragment(), FragmentResultListener {
     override fun onStart() {
         super.onStart()
         val titleWatcher = object : TextWatcher {
-            override fun beforeTextChanged(sequence: CharSequence?, start: Int, before: Int, count: Int) {
+            override fun beforeTextChanged(
+                sequence: CharSequence?,
+                start: Int,
+                before: Int,
+                count: Int
+            ) {
             }
 
-            override fun onTextChanged(sequence: CharSequence?, start: Int, before: Int, count: Int) {
+            override fun onTextChanged(
+                sequence: CharSequence?,
+                start: Int,
+                before: Int,
+                count: Int
+            ) {
                 crime.title = sequence.toString()
             }
 
@@ -124,16 +141,25 @@ class CrimeFragment: Fragment(), FragmentResultListener {
         }
 
         suspectButton.apply {
-
             val pickIntent = Intent(Intent.ACTION_VIEW, ContactsContract.Contacts.CONTENT_URI)
             val packageManager = requireActivity().packageManager
-            val resolvedActivity = packageManager.queryIntentActivities(pickIntent, PackageManager.MATCH_DEFAULT_ONLY)
-            if (resolvedActivity.size == 0) {
+            val resolvedActivity =
+                packageManager.queryIntentActivities(pickIntent, PackageManager.MATCH_DEFAULT_ONLY)
+            if (resolvedActivity.size != 0) {
                 setOnClickListener {
-                    launcher.launch(null)
+                    launcherPermission.launch(android.Manifest.permission.READ_CONTACTS)
                 }
             } else {
                 isEnabled = false
+            }
+        }
+
+        callSuspectButton.setOnClickListener {
+            viewModel.contactNumber.observe(viewLifecycleOwner) {
+                val intent = Intent(Intent.ACTION_DIAL).apply {
+                    data = Uri.parse("tel:$it")
+                }
+                startActivity(intent)
             }
         }
     }
@@ -151,7 +177,7 @@ class CrimeFragment: Fragment(), FragmentResultListener {
     }
 
     private fun getCrimeReport(): String {
-        val solvedString = if(crime.isSolved) getString(R.string.crime_report_solved)
+        val solvedString = if (crime.isSolved) getString(R.string.crime_report_solved)
         else getString(R.string.crime_report_unsolved)
 
         val dateString = DateFormat.format(DATE_FORMAT, crime.date).toString()
@@ -163,13 +189,20 @@ class CrimeFragment: Fragment(), FragmentResultListener {
     private fun dateResult(result: Bundle) = result.getSerializable(RESULT_DATE_KEY) as Date
 
     override fun onFragmentResult(requestKey: String, result: Bundle) {
-        when(requestKey) {
+        when (requestKey) {
             REQUEST_DATE -> {
                 crime.date = dateResult(result)
                 updateUI()
             }
         }
     }
+
+    private fun checkPermissionForContacts(block: () -> Unit) =
+        registerForActivityResult(RequestPermission()) { isGranted ->
+            if (isGranted) {
+                block()
+            }
+        }
 
     private fun getContactName() = registerForActivityResult(PickContact()) { result ->
         val queryFields = arrayOf(ContactsContract.Contacts.DISPLAY_NAME, ContactsContract.Contacts._ID)
@@ -183,6 +216,23 @@ class CrimeFragment: Fragment(), FragmentResultListener {
                 crime.suspect = suspect
                 viewModel.saveCrime(crime)
                 suspectButton.text = suspect
+
+                val contactId = it.getString(1)
+                val phoneUri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI
+                val phoneNumberQueryFields = arrayOf(ContactsContract.CommonDataKinds.Phone.NUMBER)
+                val phoneWhereClause = "${ContactsContract.CommonDataKinds.Phone.CONTACT_ID} = ?"
+                val phoneQueryParameters = arrayOf(contactId)
+                val phoneCursor = requireActivity().contentResolver.query(
+                    phoneUri,
+                    phoneNumberQueryFields,
+                    phoneWhereClause,
+                    phoneQueryParameters,
+                    null
+                )
+                phoneCursor?.use { cursorPhone ->
+                    cursorPhone.moveToFirst()
+                    viewModel.saveNumber(cursorPhone.getString(0))
+                }
             }
         }
     }
