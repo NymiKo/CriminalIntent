@@ -7,4 +7,13 @@
     <string name="requires_police">Вызвать полицию</string>
     <string name="new_crime">Новое преступление</string>
     <string name="empty_list">Список пуст</string>
+    <string name="crime_suspect_text">Выбрать подозреваемого</string>
+    <string name="crime_report_text">Отправить отчет о преступлении</string>
+    <string name="crime_report">%1$s! Преступление было раскрыто на %2$s. %3$s, и %4$s</string>
+    <string name="crime_report_solved">Дело раскрыто</string>
+    <string name="crime_report_unsolved">Дело не раскрыто</string>
+    <string name="crime_report_no_suspect">подозреваемого нет.</string>
+    <string name="crime_report_suspect">подозреваемый %s.</string>
+    <string name="crime_report_subject">CriminalIntent Отчет о преступлении</string>
+    <string name="send_report">Отправить отчет о преступлении через</string>
 </resources>

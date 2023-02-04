@@ -3,6 +3,7 @@ package com.easyprog.android.criminalintent.fragments.crime
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +25,7 @@ class CrimeFragment: Fragment(), FragmentResultListener {
         private const val DIALOG_DATE = "DialogDate"
         private const val REQUEST_DATE = "RequestDate"
         private const val RESULT_DATE_KEY = "ARG_RESULT_DATE"
+        private const val DATE_FORMAT = "EEE, MMM, dd"
 
         fun newInstance(crimeId: UUID): CrimeFragment {
             val args = Bundle().apply {
