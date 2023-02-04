@@ -9,7 +9,7 @@
     <string name="empty_list">Список пуст</string>
     <string name="crime_suspect_text">Выбрать подозреваемого</string>
     <string name="crime_report_text">Отправить отчет о преступлении</string>
-    <string name="crime_report">%1$s! Преступление совершено %2$s. %3$s, и %4$s</string>
+    <string name="crime_report">%1$s! Преступление совершено %2$s. %3$s, %4$s</string>
     <string name="crime_report_solved">Дело раскрыто</string>
     <string name="crime_report_unsolved">Дело не раскрыто</string>
     <string name="crime_report_no_suspect">подозреваемого нет.</string>

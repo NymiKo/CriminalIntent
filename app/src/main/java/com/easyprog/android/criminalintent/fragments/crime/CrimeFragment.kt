@@ -1,7 +1,9 @@
 package com.easyprog.android.criminalintent.fragments.crime
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.provider.ContactsContract
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.format.DateFormat
@@ -11,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
+import androidx.activity.result.contract.ActivityResultContracts.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentResultListener
 import androidx.lifecycle.ViewModelProvider
@@ -27,6 +30,7 @@ class CrimeFragment: Fragment(), FragmentResultListener {
         private const val REQUEST_DATE = "RequestDate"
         private const val RESULT_DATE_KEY = "ARG_RESULT_DATE"
         private const val DATE_FORMAT = "EEE, MMM, dd"
+        private const val REQUEST_CONTACT = 1
 
         fun newInstance(crimeId: UUID): CrimeFragment {
             val args = Bundle().apply {
@@ -44,7 +48,10 @@ class CrimeFragment: Fragment(), FragmentResultListener {
     private lateinit var titleField: EditText
     private lateinit var dateButton: Button
     private lateinit var reportButton: Button
+    private lateinit var suspectButton: Button
     private lateinit var solvedCheckBox: CheckBox
+
+    private val launcher = getContactName()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,6 +69,7 @@ class CrimeFragment: Fragment(), FragmentResultListener {
         titleField = view.findViewById(R.id.crime_title) as EditText
         dateButton = view.findViewById(R.id.crime_date) as Button
         reportButton = view.findViewById(R.id.crime_report) as Button
+        suspectButton = view.findViewById(R.id.crime_suspect) as Button
         solvedCheckBox = view.findViewById(R.id.crime_solved) as CheckBox
 
         return view
@@ -114,6 +122,20 @@ class CrimeFragment: Fragment(), FragmentResultListener {
                 startActivity(chooseIntent)
             }
         }
+
+        suspectButton.apply {
+
+            val pickIntent = Intent(Intent.ACTION_VIEW, ContactsContract.Contacts.CONTENT_URI)
+            val packageManager = requireActivity().packageManager
+            val resolvedActivity = packageManager.queryIntentActivities(pickIntent, PackageManager.MATCH_DEFAULT_ONLY)
+            if (resolvedActivity.size == 0) {
+                setOnClickListener {
+                    launcher.launch(null)
+                }
+            } else {
+                isEnabled = false
+            }
+        }
     }
 
     private fun updateUI() {
@@ -122,6 +144,9 @@ class CrimeFragment: Fragment(), FragmentResultListener {
         solvedCheckBox.apply {
             isChecked = crime.isSolved
             jumpDrawablesToCurrentState()
+        }
+        if (crime.suspect.isNotEmpty()) {
+            suspectButton.text = crime.suspect
         }
     }
 
@@ -142,6 +167,22 @@ class CrimeFragment: Fragment(), FragmentResultListener {
             REQUEST_DATE -> {
                 crime.date = dateResult(result)
                 updateUI()
+            }
+        }
+    }
+
+    private fun getContactName() = registerForActivityResult(PickContact()) { result ->
+        val queryFields = arrayOf(ContactsContract.Contacts.DISPLAY_NAME, ContactsContract.Contacts._ID)
+        val cursor = result?.let {
+            requireActivity().contentResolver.query(it, queryFields, null, null, null)
+        }
+        cursor?.use {
+            if (it.count > 0) {
+                it.moveToFirst()
+                val suspect = it.getString(0)
+                crime.suspect = suspect
+                viewModel.saveCrime(crime)
+                suspectButton.text = suspect
             }
         }
     }
