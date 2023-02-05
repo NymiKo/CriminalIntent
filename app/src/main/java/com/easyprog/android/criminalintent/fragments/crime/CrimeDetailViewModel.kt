@@ -6,6 +6,7 @@ import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.easyprog.android.criminalintent.database.entity.Crime
 import com.easyprog.android.criminalintent.repository.CrimeRepository
+import java.io.File
 import java.util.UUID
 
 class CrimeDetailViewModel: ViewModel() {
@@ -30,5 +31,9 @@ class CrimeDetailViewModel: ViewModel() {
 
     fun saveNumber(number: String) {
         _contactNumber.value = number
+    }
+
+    fun getPhotoFile(crime: Crime): File {
+        return crimeRepository.getPhotoFile(crime)
     }
 }

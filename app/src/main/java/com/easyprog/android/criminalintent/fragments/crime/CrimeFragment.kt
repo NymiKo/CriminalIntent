@@ -1,28 +1,32 @@
 package com.easyprog.android.criminalintent.fragments.crime
 
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.EditText
-import android.widget.ImageButton
+import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.PickContact
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
+import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentResultListener
 import androidx.lifecycle.ViewModelProvider
 import com.easyprog.android.criminalintent.R
 import com.easyprog.android.criminalintent.database.entity.Crime
 import com.easyprog.android.criminalintent.fragments.date_picker.DatePickerFragment
+import java.io.File
 import java.util.*
 
 class CrimeFragment : Fragment(), FragmentResultListener {
@@ -47,17 +51,21 @@ class CrimeFragment : Fragment(), FragmentResultListener {
     private val viewModel: CrimeDetailViewModel by lazy { ViewModelProvider(this)[CrimeDetailViewModel::class.java] }
 
     private lateinit var crime: Crime
+    private lateinit var photoFile: File
+    private lateinit var photoUri: Uri
+
     private lateinit var titleField: EditText
     private lateinit var dateButton: Button
     private lateinit var reportButton: Button
     private lateinit var suspectButton: Button
+    private lateinit var photoButton: ImageButton
+    private lateinit var photoView: ImageView
     private lateinit var callSuspectButton: ImageButton
     private lateinit var solvedCheckBox: CheckBox
 
     private val launcher = getContactName()
     private val launcherPermission = checkPermissionForContacts { launcher.launch(null) }
-
-    private var contactNumber = ""
+    private val launcherPhotoResult = getPhotoResult()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,8 +84,10 @@ class CrimeFragment : Fragment(), FragmentResultListener {
         dateButton = view.findViewById(R.id.crime_date) as Button
         reportButton = view.findViewById(R.id.crime_report) as Button
         suspectButton = view.findViewById(R.id.crime_suspect) as Button
+        photoButton = view.findViewById(R.id.crime_camera) as ImageButton
         callSuspectButton = view.findViewById(R.id.call_suspect) as ImageButton
         solvedCheckBox = view.findViewById(R.id.crime_solved) as CheckBox
+        photoView = view.findViewById(R.id.crime_photo) as ImageView
 
         return view
     }
@@ -87,6 +97,8 @@ class CrimeFragment : Fragment(), FragmentResultListener {
         viewModel.crimeIdLiveData.observe(viewLifecycleOwner) { crime ->
             crime?.let {
                 this.crime = crime
+                photoFile = viewModel.getPhotoFile(crime)
+                photoUri = FileProvider.getUriForFile(requireActivity(), "com.easyprog.android.criminalintent.fileprovider", photoFile)
                 updateUI()
             }
         }
@@ -162,6 +174,25 @@ class CrimeFragment : Fragment(), FragmentResultListener {
                 startActivity(intent)
             }
         }
+
+        photoButton.apply {
+            val packageManager: PackageManager = requireActivity().packageManager
+            val captureImage = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            val resolvedActivity: ResolveInfo? = packageManager.resolveActivity(captureImage, PackageManager.MATCH_DEFAULT_ONLY)
+            if (resolvedActivity == null) {
+                isEnabled = false
+            }
+
+            setOnClickListener {
+                captureImage.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
+                val cameraActivities: List<ResolveInfo> = packageManager.queryIntentActivities(captureImage, PackageManager.MATCH_DEFAULT_ONLY)
+                for (cameraActivity in cameraActivities) {
+                    requireActivity().grantUriPermission(cameraActivity.activityInfo.packageName, photoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                }
+
+                launcherPhotoResult.launch(captureImage)
+            }
+        }
     }
 
     private fun updateUI() {
@@ -203,6 +234,12 @@ class CrimeFragment : Fragment(), FragmentResultListener {
                 block()
             }
         }
+
+    private fun getPhotoResult() = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { photoResult ->
+        if (photoResult.resultCode == Activity.RESULT_OK) {
+
+        }
+    }
 
     private fun getContactName() = registerForActivityResult(PickContact()) { result ->
         val queryFields = arrayOf(ContactsContract.Contacts.DISPLAY_NAME, ContactsContract.Contacts._ID)
