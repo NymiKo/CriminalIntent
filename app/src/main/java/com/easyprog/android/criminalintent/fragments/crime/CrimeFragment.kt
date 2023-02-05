@@ -26,6 +26,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.easyprog.android.criminalintent.R
 import com.easyprog.android.criminalintent.database.entity.Crime
 import com.easyprog.android.criminalintent.fragments.date_picker.DatePickerFragment
+import com.easyprog.android.criminalintent.utils.SimpleTextWatcher
 import java.io.File
 import java.util.*
 
@@ -107,26 +108,8 @@ class CrimeFragment : Fragment(), FragmentResultListener {
 
     override fun onStart() {
         super.onStart()
-        val titleWatcher = object : TextWatcher {
-            override fun beforeTextChanged(
-                sequence: CharSequence?,
-                start: Int,
-                before: Int,
-                count: Int
-            ) {
-            }
-
-            override fun onTextChanged(
-                sequence: CharSequence?,
-                start: Int,
-                before: Int,
-                count: Int
-            ) {
-                crime.title = sequence.toString()
-            }
-
-            override fun afterTextChanged(sequence: Editable?) {
-            }
+        val titleWatcher = SimpleTextWatcher {
+            crime.title = it.toString()
         }
 
         titleField.addTextChangedListener(titleWatcher)
