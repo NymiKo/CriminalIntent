@@ -27,6 +27,7 @@ import com.easyprog.android.criminalintent.R
 import com.easyprog.android.criminalintent.database.entity.Crime
 import com.easyprog.android.criminalintent.fragments.date_picker.DatePickerFragment
 import com.easyprog.android.criminalintent.utils.SimpleTextWatcher
+import com.easyprog.android.criminalintent.utils.getScaledBitmap
 import java.io.File
 import java.util.*
 
@@ -188,6 +189,7 @@ class CrimeFragment : Fragment(), FragmentResultListener {
         if (crime.suspect.isNotEmpty()) {
             suspectButton.text = crime.suspect
         }
+        updatePhotoView()
     }
 
     private fun getCrimeReport(): String {
@@ -220,7 +222,8 @@ class CrimeFragment : Fragment(), FragmentResultListener {
 
     private fun getPhotoResult() = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { photoResult ->
         if (photoResult.resultCode == Activity.RESULT_OK) {
-
+            requireActivity().revokeUriPermission(photoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+            updatePhotoView()
         }
     }
 
@@ -257,8 +260,22 @@ class CrimeFragment : Fragment(), FragmentResultListener {
         }
     }
 
+    private fun updatePhotoView() {
+        if (photoFile.exists()) {
+            val bitmap = getScaledBitmap(photoFile.path, photoView.width, photoView.height)
+            photoView.setImageBitmap(bitmap)
+        } else {
+            photoView.setImageDrawable(null)
+        }
+    }
+
     override fun onStop() {
         super.onStop()
         viewModel.saveCrime(crime)
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        requireActivity().revokeUriPermission(photoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
     }
 }
