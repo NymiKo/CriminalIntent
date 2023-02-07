@@ -67,6 +67,9 @@ class CrimeFragment : Fragment(), FragmentResultListener {
     private lateinit var callSuspectButton: ImageButton
     private lateinit var solvedCheckBox: CheckBox
 
+    private var widthImageView = 0
+    private var heightImageView = 0
+
     private val launcher = getContactName()
     private val launcherPermission = checkPermissionForContacts { launcher.launch(null) }
     private val launcherPhotoResult = getPhotoResult()
@@ -107,6 +110,13 @@ class CrimeFragment : Fragment(), FragmentResultListener {
             }
         }
         childFragmentManager.setFragmentResultListener(REQUEST_DATE, viewLifecycleOwner, this)
+
+        photoView.apply {
+            viewTreeObserver.addOnGlobalLayoutListener {
+                widthImageView = width
+                heightImageView = height
+            }
+        }
     }
 
     override fun onStart() {
@@ -270,7 +280,7 @@ class CrimeFragment : Fragment(), FragmentResultListener {
 
     private fun updatePhotoView() {
         if (photoFile.exists()) {
-            val bitmap = getScaledBitmap(photoFile.path, photoView.width, photoView.height)
+            val bitmap = getScaledBitmap(photoFile.path, widthImageView, heightImageView)
             photoView.setImageBitmap(bitmap)
         } else {
             photoView.setImageDrawable(null)
