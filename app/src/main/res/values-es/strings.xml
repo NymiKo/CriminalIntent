@@ -21,7 +21,9 @@
     <string name="zoom_image">Imagen ampliada</string>
     <string name="requires_police">Llamar a la policía</string>
     <string name="empty_list">La lista está vacía</string>
-    <string name="call_suspect">Llamar al sospechoso</string>
+    <string name="call_suspect">Llamar al sospechoso (establecido)</string>
+    <string name="call_no_suspect">Llamar al sospechoso (no identificado)</string>
     <string name="crime_solved_description">Crimen resuelto</string>
-    <string name="crime_item_description">Título del delito: %1$s, fecha: %1$2</string>
+    <string name="date">Fecha</string>
+    <string name="Report">Informe</string>
 </resources>

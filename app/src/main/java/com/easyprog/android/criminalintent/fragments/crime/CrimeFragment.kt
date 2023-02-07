@@ -206,6 +206,7 @@ class CrimeFragment : Fragment(), FragmentResultListener {
         }
         if (crime.suspect.isNotEmpty()) {
             suspectButton.text = crime.suspect
+            callSuspectButton.contentDescription = getString(R.string.call_suspect)
         }
         updatePhotoView()
     }

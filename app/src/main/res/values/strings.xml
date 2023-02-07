@@ -20,7 +20,9 @@
     <string name="crime_report_subject">CriminalIntent Отчет о преступлении</string>
     <string name="send_report">Отправить отчет о преступлении через</string>
     <string name="zoom_image">Увеличенное изображение</string>
-    <string name="call_suspect">Позвонить подозреваемому</string>
+    <string name="call_no_suspect">Позвонить подозреваемому(не установлен)</string>
+    <string name="call_suspect">Позвонить подозреваемому(установлен)</string>
     <string name="crime_solved_description">Преступление раскрыто</string>
-    <string name="crime_item_description">Название перступления: %1$s, дата: %1$2</string>
+    <string name="date">Дата</string>
+    <string name="Report">Отчет</string>
 </resources>
