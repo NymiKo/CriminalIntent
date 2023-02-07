@@ -16,4 +16,5 @@
     <string name="crime_report_suspect">подозреваемый %s.</string>
     <string name="crime_report_subject">CriminalIntent Отчет о преступлении</string>
     <string name="send_report">Отправить отчет о преступлении через</string>
+    <string name="zoom_image">Увеличенное изображение</string>
 </resources>

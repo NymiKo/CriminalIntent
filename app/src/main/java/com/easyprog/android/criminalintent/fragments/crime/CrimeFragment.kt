@@ -26,6 +26,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.easyprog.android.criminalintent.R
 import com.easyprog.android.criminalintent.database.entity.Crime
 import com.easyprog.android.criminalintent.fragments.date_picker.DatePickerFragment
+import com.easyprog.android.criminalintent.fragments.viewing_image.DialogViewingImage
 import com.easyprog.android.criminalintent.utils.SimpleTextWatcher
 import com.easyprog.android.criminalintent.utils.getScaledBitmap
 import java.io.File
@@ -36,6 +37,7 @@ class CrimeFragment : Fragment(), FragmentResultListener {
     companion object {
         private const val ARG_CRIME_ID = "crime_id"
         private const val DIALOG_DATE = "DialogDate"
+        private const val DIALOG_VIEWING_IMAGE = "DialogViewingImage"
         private const val REQUEST_DATE = "RequestDate"
         private const val RESULT_DATE_KEY = "ARG_RESULT_DATE"
         private const val DATE_FORMAT = "EEE, MMM, dd"
@@ -175,6 +177,12 @@ class CrimeFragment : Fragment(), FragmentResultListener {
                 }
 
                 launcherPhotoResult.launch(captureImage)
+            }
+        }
+
+        photoView.setOnClickListener {
+            DialogViewingImage.newInstance(crime.photoFileName).apply {
+                show(this@CrimeFragment.childFragmentManager, DIALOG_VIEWING_IMAGE)
             }
         }
     }
