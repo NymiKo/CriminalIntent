@@ -5,6 +5,9 @@
     <string name="crime_title_label">Título</string>
     <string name="crime_details_label">Detalles</string>
     <string name="crime_solved_label">Solucionado</string>
+    <string name="crime_photo_button_description">Tomar foto de la escena del crimen</string>
+    <string name="crime_photo_no_image_description">Foto de la escena del crimen (no establecida)</string>
+    <string name="crime_photo_image_description">Foto de la escena del crimen (establecida)</string>
     <string name="new_crime">Crimen Nuevo</string>
     <string name="crime_suspect_text">Elegir Sospechoso</string>
     <string name="crime_report_text">Enviar el Informe del Crimen</string>
@@ -18,4 +21,7 @@
     <string name="zoom_image">Imagen ampliada</string>
     <string name="requires_police">Llamar a la policía</string>
     <string name="empty_list">La lista está vacía</string>
+    <string name="call_suspect">Llamar al sospechoso</string>
+    <string name="crime_solved_description">Crimen resuelto</string>
+    <string name="crime_item_description">Título del delito: %1$s, fecha: %1$2</string>
 </resources>

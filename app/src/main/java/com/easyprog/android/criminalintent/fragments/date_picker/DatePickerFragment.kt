@@ -47,7 +47,7 @@ class DatePickerFragment: DialogFragment() {
         }
 
         val date = requireArguments().getSerializable(ARG_DATE) as Date
-        val calendar = Calendar.getInstance()
+        val calendar = Calendar.getInstance(Locale("es", "ES"))
         calendar.time = date
         val initialYear = calendar.get(Calendar.YEAR)
         val initialMonth = calendar.get(Calendar.MONTH)

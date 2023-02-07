@@ -39,6 +39,7 @@ class CrimeAdapter(val callbacks: Callbacks?): ListAdapter<Crime, CrimeHolder>(C
             titleTextView.text = this.crime.title
             dateTextView.text = this.crime.date.toString()
             solvedImageView.visibility = if (crime.isSolved) View.VISIBLE else View.GONE
+            itemView.contentDescription = crime.title + solvedImageView.contentDescription
         }
 
         override fun onClick(v: View?) {
